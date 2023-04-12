@@ -63,5 +63,44 @@ ORDER BY total_crimes_reported DESC;
 ```
 ![image](https://user-images.githubusercontent.com/104872221/230961524-dc4fe51f-f31c-47c8-8c1c-fecc214bb443.png)
 
+### 6. What month had the most homicides and what was the average and median temperature?
+
+```sql
+WITH cte_crimes AS (
+SELECT 
+ DATENAME(month, CAST(c.crime_date AS DATE)) AS crime_date,
+ c.crime_type,
+ t.temp_high
+FROM ChicagoCrime..chicago_crimes_2021 AS c
+INNER JOIN ChicagoCrime..chicago_temp_2021$ AS t
+ON t.date = CAST(c.crime_date AS DATE)
+)
+SELECT 
+ crime_date,
+ COUNT(*) AS crimes_reported,
+ ROUND(AVG(temp_high),1) AS avg_temp
+ --PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY temp_high) OVER() AS median_temp
+FROM cte_crimes
+WHERE crime_type = 'homicide'
+GROUP BY crime_date
+ORDER BY crime_date;
+```
+![image](https://user-images.githubusercontent.com/104872221/231579251-d67ab5ae-aac3-4968-84eb-4653fd153add.png)
+
+### 7. What weekday were most crimes committed?
+
+```sql
+SELECT 
+ DATENAME(weekday, CONVERT(DATE, crime_date)) AS weekdays,
+ COUNT(*) AS n_crimes
+FROM ChicagoCrime..chicago_crimes_2021
+GROUP BY DATENAME(weekday, CONVERT(DATE, crime_date))
+ORDER BY n_crimes DESC;
+```
+
+![image](https://user-images.githubusercontent.com/104872221/231587306-5e6fc32e-5298-467d-b13a-975b3735b980.png)
+
+
+
 
 
