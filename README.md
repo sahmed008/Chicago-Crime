@@ -4,6 +4,9 @@ View my solution [here](https://github.com/sahmed008/Chicago-Crime/blob/main/Cri
 
 <img src="https://www.chicagomag.com/wp-content/archive/city-life/March-2018/What-We-Can-Do-About-Crime-in-Chicago/ScreenShot2018-03-12at10.19.00AM.png">
 
+## Entity Relationship Diagram
+<img src="https://raw.githubusercontent.com/iweld/chicago_crime_and_weather_2021/main/ERD.JPG">
+
 ## Case Study Questions
 
 <details>
@@ -29,3 +32,7 @@ Click here to expand!
 ##### 16. Display the most consecutive days where a homicide occured and the timeframe.
 ##### 17. What are the top 10 most common locations for reported crimes and their frequency depending on the season?
 ##### 18. What is the Month, day of the week and the number of homicides that occured in a babershop or beauty salon?
+
+
+</summary>
+  
