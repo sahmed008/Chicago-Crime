@@ -2,6 +2,13 @@
 
 View my solution [here](https://github.com/sahmed008/Chicago-Crime/blob/main/Crime%26Weather.md)
 
+## Case Study Questions
+
+<details>
+<summary>
+Click here to expand!
+</summary>
+
 ##### 1. How many total crimes were reported in 2021?
 ##### 2. What is the count of Homicides, Battery and Assaults reported?
 ##### 3. What are the top ten communities that had the most crimes reported?
