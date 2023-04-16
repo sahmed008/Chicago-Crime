@@ -2,6 +2,8 @@
 
 View my solution [here](https://github.com/sahmed008/Chicago-Crime/blob/main/Crime%26Weather.md)
 
+<img src="https://www.chicagomag.com/wp-content/archive/city-life/March-2018/What-We-Can-Do-About-Crime-in-Chicago/ScreenShot2018-03-12at10.19.00AM.png">
+
 ## Case Study Questions
 
 <details>
