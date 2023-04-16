@@ -221,5 +221,112 @@ ORDER BY n_of_crimes DESC;
 ![image](https://user-images.githubusercontent.com/104872221/232227507-da5f1ae1-504d-44fc-9715-b4f33d99f176.png)
 
 
+### 13. What are the top 5 least reported crime, how many arrests were made and the percentage of arrests made?
+```sql
+SELECT 
+ crime_type,
+ n_crimes,
+ n_arrests,
+ ROUND(CAST(n_arrests AS float)/ n_crimes * 100,2) AS arrest_percent
+FROM (
+SELECT 
+ crime_type,
+ COUNT(*) AS n_crimes,
+ SUM(
+		CASE WHEN arrest = 'true' THEN 1
+		ELSE 0
+		END) AS n_arrests,
+ DENSE_RANK() OVER (ORDER BY COUNT(*) ASC) AS rnk
+FROM ChicagoCrime..chicago_crimes_2021
+GROUP BY crime_type) as temp
+WHERE temp.rnk <5
+ORDER BY n_crimes ASC
+```
+
+![image](https://user-images.githubusercontent.com/104872221/232237315-cda7eca1-1e48-4eeb-b3a1-6c29cdc79065.png)
+
+### 14. What is the percentage of domestic violence crimes?
+
+```sql
+WITH violences AS (
+SELECT 
+ crime_type,
+ SUM(CASE 
+	WHEN domestic = 'true' THEN 1 
+	ELSE 0
+ END) AS domestic_violence,
+ SUM(CASE 
+	WHEN domestic = 'false' THEN 1 
+	ELSE 0
+ END) AS non_domestic_violence,
+ COUNT(*) AS total_violence
+FROM ChicagoCrime..chicago_crimes_2021
+GROUP BY crime_type
+)
+SELECT 
+ crime_type,
+ domestic_violence,
+ non_domestic_violence,
+ total_violence,
+ ROUND(domestic_violence / CAST(total_violence AS float) * 100,2) AS percent_domestic,
+ ROUND(non_domestic_violence / CAST(total_violence AS float) * 100,2) AS percent_non_domestic
+FROM violences
+ORDER BY total_violence DESC;
+```
+
+![image](https://user-images.githubusercontent.com/104872221/232314892-6dc7ef03-34f8-46e7-bd4b-ce8b46c6ac93.png)
+
+### 15. Display how many crimes were reported on a monthly basis in chronological order. What is the month to month percentage change of crimes reported?
+
+```sql
+WITH CTE AS (
+ SELECT
+        DATEPART(MONTH, crime_date) AS crime_month,
+        COUNT(*) AS n_crimes
+    FROM 
+       ChicagoCrime..chicago_crimes_2021
+    GROUP BY 
+        DATEPART(MONTH, crime_date)
+)
+
+SELECT
+    crime_month,
+    n_crimes,
+    ROUND(100 * (n_crimes - 
+	LAG(n_crimes) OVER (ORDER BY crime_month)) / CAST(LAG(n_crimes) OVER (ORDER BY crime_month) AS FLOAT), 2) AS month_to_month
+FROM
+    CTE
+ORDER BY
+    crime_month;
+```
+
+![image](https://user-images.githubusercontent.com/104872221/232320978-641245ff-8832-4fec-9a66-bf28159de7d2.png)
+
+
+### 16. Display the most consecutive days where a homicide occured and the timeframe.
+
+```sql
+WITH CTE AS (
+    SELECT CAST(crime_date AS date) AS crime_date, 
+           DATEADD(DAY, - ROW_NUMBER() OVER (ORDER BY crime_date), CAST(crime_date AS date)) AS grp,
+		   ROW_NUMBER() OVER (ORDER BY crime_date) AS row_numb
+    FROM ChicagoCrime..chicago_crimes_2021
+	WHERE crime_type = 'homicide'
+)
+SELECT TOP 5
+       MIN(crime_date) AS start_date, 
+       MAX(crime_date) AS end_date,
+	   DATEDIFF(DAY, MIN(crime_date), MAX(crime_date)) + 1 AS consecutive_days
+FROM CTE
+GROUP BY grp
+ORDER BY consecutive_days DESC
+--HAVING DATEDIFF(DAY, MIN(crime_date), MAX(crime_date)) + 1;
+```
+
+![image](https://user-images.githubusercontent.com/104872221/232332092-0b1a91e2-36f0-4c30-9e7a-5eac4108cdc7.png)
+
+ 
+
+
 
 
