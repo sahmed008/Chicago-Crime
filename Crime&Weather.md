@@ -327,6 +327,56 @@ ORDER BY consecutive_days DESC
 
  
 
+### 17. What are the top 10 most common locations for reported crimes and their frequency depending on the season?
 
+```sql
+WITH weather_crimes AS (
+SELECT 
+crime_location,
+SUM(CASE WHEN temp_high >= 41  AND temp_high <= 85 THEN 1 ELSE 0 END) AS 'Spring',
+SUM(CASE WHEN temp_high >= 4 AND temp_high <= 40 THEN 1 ELSE 0 END) AS 'Winter',
+SUM(CASE WHEN temp_high >=86 THEN 1 ELSE 0 END) AS 'Summer',
+COUNT(*) AS total_crimes,
+DENSE_RANK() OVER(ORDER BY COUNT(*) DESC) AS rnk
+FROM ChicagoCrime..chicago_crimes_2021 AS c
+INNER JOIN ChicagoCrime..chicago_temp_2021$ AS t
+ON CAST(c.crime_date AS DATE) = CAST(t.date AS DATE)
+GROUP BY crime_location
+)
+SELECT 
+ *
+FROM weather_crimes
+WHERE rnk <= 10;
+```
 
+![image](https://user-images.githubusercontent.com/104872221/232335527-e39c738a-29c2-4038-8660-5472465a918a.png)
+
+### 18. What is the Month, day of the week and the number of homicides that occured in a babershop or beauty salon?
+
+```sql
+WITH crimes_cte AS (
+SELECT 
+CAST(crime_date AS DATE) AS crime_date,
+crime_type,
+crime_location,
+city_block
+FROM ChicagoCrime..chicago_crimes_2021
+WHERE (crime_location LIKE '%shop%' AND crime_location != 'pawn shop')
+AND crime_type = 'homicide'
+)
+SELECT
+ DATENAME(month, crime_date) AS crime_month,
+ DATENAME(WEEKDAY, crime_date) AS crime_day,
+ crime_type,
+ crime_location,
+ COUNT(*) AS n_homicides
+FROM crimes_cte
+GROUP BY 
+DATENAME(month, crime_date),  
+DATENAME(WEEKDAY, crime_date),
+crime_type,
+crime_location;
+```
+
+![image](https://user-images.githubusercontent.com/104872221/232336985-02a1a288-65fd-41c2-8554-a226421bd013.png)
 
